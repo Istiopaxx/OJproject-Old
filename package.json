@@ -17,13 +17,14 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "request": "^2.88.2",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "webpack": "^4.44.2"
   },
   "scripts": {
     "start": "npm-run-all --parallel start:**",
     "start:client": "react-scripts start",
-    "start:server": "node ./servers/server.js",
-    "dev": "nodemon ./servers/server.js",
+    "start:server": "node ./servers/app.js",
+    "dev": "nodemon ./servers/app.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
