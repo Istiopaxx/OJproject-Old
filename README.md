@@ -1,17 +1,23 @@
 online judge
+============
 
 개요
+---
 json 형태의 데이터를 주고받아 문제를 푸는 온라인 저지
 
-1. 기능 - 문제 풀이
+#1. 기능 - 문제 풀이
 user가 문제 “start API”에 JSON형태로 POST 요청을 보낸다.JSON 형태에는 user_id와 problem_id가 포함되어 있어야 한다.
 데이터검증 후 토큰(problem_id , user_id 더한 값을 해싱)  + 문제의 초기상태 ( 문제DB에 저장해 둔 시나리오를 쿼리) 를 생성하여 JSON 형태로 response.
 “call API”에 get요청을 보내면 해당 토큰에 해당하는 state를 response. (채점DB에 있는 토큰key에 맞는 value를 쿼리로 날려서 JSON형태로 가져온다.) 
-“action API”에 post요청을 보내면 문제에 해당하는 컨트롤러가 action을 state에 적용 함. (채점DB에 있는 해당 value를 가져와서 변경 후 timestamp++,상태 변경. DB저장) 후 바뀐state를 response.
-“action API” 컨트롤러 끝단에 timestamp의 값을 확인 후 실패,성공 여부를 확인 후 해당 조건이 성립한다면 채점DB의 state 삭제, grade 컨트롤러에 state 전달후 grade 측정 후 채점 결과를 response, 채점번호DB에 user_id,problem_id,grade 등을 저장.
-3. 기능 - 유저 information
-4. 기능 - 채점 현황
-5. 구글 인증 - 
+“action API”에 post요청을 보내면 문제에 해당하는 컨트롤러가 action을 state에 적용 함. 
+(채점DB에 있는 해당 value를 가져와서 변경 후 timestamp++,상태 변경. DB저장) 후 바뀐state를 response.
+“action API” 컨트롤러 끝단에 timestamp의 값을 확인 후 실패,성공 여부를 확인 후 해당 조건이 성립한다면 채점DB의 state 삭제, 
+grade 컨트롤러에 state 전달후 grade 측정 후 채점 결과를 response, 채점번호DB에 user_id,problem_id,grade 등을 저장.
+#2. 기능 - 유저 information
+#3. 기능 - 채점 현황
+#4. 구글,깃허브,카카오 계정 인증
+
+* * *
 
 
 # Getting Started with Create React App
