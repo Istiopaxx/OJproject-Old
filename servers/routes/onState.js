@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const authController = require('../controllers/authController');
+
 
 router.use(function(err, req, res, next) {
     console.error(err.stack);
@@ -13,6 +15,13 @@ router.use('/', function(req, res, next) {
     next();
 })
 
+//verifying token
+router.get('/', authController.verify_token);
+
+router.get('/', function(req, res) {
+    console.log(req.decoded);
+    res.json(req.decoded);
+});
 
 
 

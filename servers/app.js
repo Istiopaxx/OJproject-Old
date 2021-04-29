@@ -1,32 +1,54 @@
 
 
+
+
+
+
+
+
+// load dependency
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
+const startRouter = require('./routes/start');
+const onStateRouter = require('./routes/onState');
 
 
-const app = express();
-const server = http.createServer(app);
+
+// load config
+const config = require('./config');
 const port = process.env.PORT || 3001;
 
 
-const startRouter = require('./routes/start');
+
+// =========================================================
+const app = express();
+const server = http.createServer(app);
 
 
-
+//parse json & url-encoded query
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// logging
 app.use(morgan('dev'));
 
+//set secret key for jwt
+app.set('jwt-secret', config.secret);
 
 
-
+// server open
 server.listen(port, () => {
   console.log(`express is running on ${port}`);
 });
 
+
+
+// api route
+app.use('/api/start', startRouter);
+app.use('/api/onState', onStateRouter);
 
 let data = {
   "problems": [
@@ -42,12 +64,8 @@ let data = {
     }
   ]
 };
-
-
-
-
-app.use('/api/start', startRouter);
-
 app.get('/api', (req, res) => res.json(data));
+
+
 
 

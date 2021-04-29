@@ -1,6 +1,8 @@
 const express = require('express');
-const crypto = require('crypto');
 const router = express.Router();
+
+const authController = require('../controllers/authController');
+
 
 
 
@@ -19,37 +21,9 @@ router.all('/', function(req, res, next) {
 });
 
 
-// verifying user_id&problem_id
-router.post('/', function(req, res, next) {
-    const data = req.body;
-
-    const user_id = data.user_id;
-    const problem_id = data.problem_id;
-    // not yet implemented - connect to user, problem DB and verifying
-    
-    console.log(user_id);
-    console.log(problem_id);
-
-    next();
-});
-
-
 // making authToken with problem-id, user-id
-router.post('/', function(req, res, next) {
-    const user_id = req.body.user_id;
-    const problem_id = req.body.problem_id;
-    
-    const authToken = crypto
-        .createHash('sha256')
-        .update(user_id + problem_id)
-        .digest('hex');
-    
-    
-    req.authToken = authToken;
-    console.log(authToken);
+router.post('/', authController.make_grading_token);
 
-    next();
-});
 
 
 // make a row at grading DB
