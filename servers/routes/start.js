@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const authController = require('../controllers/authController');
+const stateController = require('../controllers/stateController');
 
 
 
@@ -13,7 +14,6 @@ router.use(function(err, req, res, next) {
 });
 
 
-
 // logging time
 router.all('/', function(req, res, next) {
     console.log('Time:', Date.now());
@@ -21,35 +21,16 @@ router.all('/', function(req, res, next) {
 });
 
 
-// making authToken with problem-id, user-id
+// making authToken with problemId, userId
 router.post('/', authController.make_grading_token);
 
-
-
 // make a row at grading DB
-// Key : authToken  Value : problem_id's first state
-router.post('/', function(req, res, next) {
-    // not yet implemented
-
-    next();
-});
+// Key : authToken  Value : state and array of tickets
+router.post('/', stateController.create_first_state);
 
 
 // response json - token, first state
-router.post('/', function(req, res, next) {
-    const authToken = req.authToken;
-    // const firstState = req.firstState;
-    const firstState = {};
-
-    const ret = {
-        "token": authToken,
-        "state": firstState,
-    }
-    console.log(ret);
-
-    res.status(200).json(ret);
-});
-
+router.post('/', stateController.respond_state);
 
 
 module.exports = router;

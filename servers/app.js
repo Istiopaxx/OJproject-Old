@@ -41,7 +41,7 @@ app.set('jwt-secret', config.secret);
 
 // server open
 server.listen(port, () => {
-  console.log(`express is running on ${port}`);
+    console.log(`express is running on ${port}`);
 });
 
 
@@ -51,18 +51,18 @@ app.use('/api/start', startRouter);
 app.use('/api/onState', onStateRouter);
 
 let data = {
-  "problems": [
-    {
-      "id": "1",
-      "name": "Elevator",
-      "explanation" : "엘리베이터 제어 시스템"
-    },
-    {
-      "id": "2",
-      "name": "SNS",
-      "explanation" : "팔로잉 추천을 사용자들의 팔로잉이 각각 20명 이상이 되도록 하는 추천시스템 구현"
-    }
-  ]
+    "problems": [
+        {
+            "id": "1",
+            "name": "Elevator",
+            "explanation" : "엘리베이터 제어 시스템"
+        },
+        {
+            "id": "2",
+            "name": "SNS",
+            "explanation" : "팔로잉 추천을 사용자들의 팔로잉이 각각 20명 이상이 되도록 하는 추천시스템 구현"
+        }
+    ]
 };
 app.get('/api', (req, res) => res.json(data));
 

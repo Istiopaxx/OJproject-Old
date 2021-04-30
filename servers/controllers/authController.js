@@ -13,20 +13,22 @@ exports.make_grading_token = function(req, res, next) {
 
     console.log(userId, problemId);
 
+    /*
     const check = function(id) {
         return new Promise((resolve, reject) => {
             if(!id) {
-                reject('no id')
+                reject('no data');
             }
             else {
                 resolve(id);
             }
         });
     }
+    */
 
     const make_token = function(user, problem) {
         if(!user || !problem) {
-            throw new Error('no data');
+            res.status(400).send('Bad Request');
         }
         const p = new Promise((resolve, reject) => {
             jwt.sign(
@@ -48,19 +50,24 @@ exports.make_grading_token = function(req, res, next) {
     }
 
     const append_token = function(token) {
-        
         req.authToken = token;
         next();
     }
 
+    const grading_key = function() {
+
+
+    }
+
     /*
-    const userInstance = User.findOneByUserId(userId).then(check)
-    const problemInstance = Problem.findOneByProblemId(problemId).then(check)
+    // 데이터베이스 쿼리가 promise를 반환한다고 가정
+    const userInstance = User.findOneByUserId(userId);
+    const problemInstance = Problem.findOneByProblemId(problemId);
     */
 
 
     // temporary implementation
-
+    
     let userInstance = new Promise((resolve, reject) => {
         resolve(userId);
         reject('');
@@ -69,14 +76,15 @@ exports.make_grading_token = function(req, res, next) {
         resolve(problemId);
         reject('');
     })
+    
 
     Promise.all([userInstance, problemInstance]).then(values => {
         make_token(values[0], values[1])
-        .then(append_token)
-        .catch(e => {
-            console.log("Error: " + e);
-            res.status(500).send('something broke in auth');
-        })
+            .then(append_token)
+            .catch(e => {
+                console.log("Error: " + e);
+                res.status(500).send('something broke in auth');
+            })
     });
     
 }
@@ -90,8 +98,9 @@ exports.verify_token = function(req, res, next) {
 
     //token does not exist
     if(!token) {
-        return res.status(401).send('Unauthorized');
+        return res.status(401).send('No x-auth-token');
     }
+
 
     const p = new Promise((resolve, reject) => {
         jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
@@ -99,16 +108,14 @@ exports.verify_token = function(req, res, next) {
             resolve(decoded);
         })
     });
-
     p.then((decoded) => {
         req.decoded = decoded;
+        req.authToken = token;
         next()
     })
-    .catch(e => {
-        res.status(401).send('Unauthorized');
-    });
-
-
+        .catch(e => {
+            res.status(401).send('Unauthorized');
+        });
 }
 
 
