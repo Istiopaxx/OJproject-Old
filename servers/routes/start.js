@@ -22,12 +22,11 @@ router.all('/', function(req, res, next) {
 
 
 // making authToken with problemId, userId
-router.post('/', authController.make_grading_token);
+router.post('/', authController.make_token);
 
 // make a row at grading DB
 // Key : authToken  Value : state and array of tickets
 router.post('/', stateController.create_first_state);
-
 
 // response json - token, first state
 router.post('/', stateController.respond_state);

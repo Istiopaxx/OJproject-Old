@@ -57,10 +57,10 @@ exports.create_first_state = function(req, res, next) {
     });
     */
 
-    /* 생성한 시나리오(json)를 채점DB에 x-auth-token을 key, 시나리오를 value로 하여 저장
+    /* 생성한 시나리오(json)를 채점DB에 gradingKey를 key, 시나리오를 value로 하여 저장
     // 시나리오는 firstState json객체와 사용자가 처리해야 할 ticket의 배열로 이루어진 json객체
     scenario.then((sc) => {
-        Grading.hset(req.authToken, sc, (err, reply) => {
+        Grading.hset(req.gradingKey, sc, (err, reply) => {
             if(err) return new Error('cannot store data');
             req.state = sc.state;
             next();
@@ -82,7 +82,7 @@ exports.create_first_state = function(req, res, next) {
 // 채점DB에서 state를 가져와 req에 첨부
 exports.get_state = function(req, res, next) {
     /*
-    Grading.hget(req.authToken, (err, reply) => {
+    Grading.hget(req.gradingKey, (err, reply) => {
         if(err) res.status(500).send('no data in Grading DB');
         req.state = reply;
         next();

@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 
-exports.make_grading_token = function(req, res, next) {
+exports.make_token = function(req, res, next) {
     const { userId, problemId } = req.body;
     const secret = req.app.get('jwt-secret');
 
@@ -28,7 +28,7 @@ exports.make_grading_token = function(req, res, next) {
 
     const make_token = function(user, problem) {
         if(!user || !problem) {
-            res.status(400).send('Bad Request');
+            res.status(400).send('No user/problem');
         }
         const p = new Promise((resolve, reject) => {
             jwt.sign(
@@ -40,7 +40,8 @@ exports.make_grading_token = function(req, res, next) {
                 {
                     expiresIn: "10m",
                               
-                },  (err, token) => {
+                },
+                (err, token) => {
                     if(err) reject(err);
                     resolve(token);
                 }
@@ -51,12 +52,14 @@ exports.make_grading_token = function(req, res, next) {
 
     const append_token = function(token) {
         req.authToken = token;
-        next();
     }
 
-    const grading_key = function() {
 
-
+    const append_grading_key = function() {
+        const token = req.authToken;
+        req.gradingKey = crypto.createHash('SHA1').update(token).digest('hex');
+        console.log(req.gradingKey);
+        next();
     }
 
     /*
@@ -67,7 +70,6 @@ exports.make_grading_token = function(req, res, next) {
 
 
     // temporary implementation
-    
     let userInstance = new Promise((resolve, reject) => {
         resolve(userId);
         reject('');
@@ -81,6 +83,7 @@ exports.make_grading_token = function(req, res, next) {
     Promise.all([userInstance, problemInstance]).then(values => {
         make_token(values[0], values[1])
             .then(append_token)
+            .then(append_grading_key)
             .catch(e => {
                 console.log("Error: " + e);
                 res.status(500).send('something broke in auth');
@@ -101,7 +104,6 @@ exports.verify_token = function(req, res, next) {
         return res.status(401).send('No x-auth-token');
     }
 
-
     const p = new Promise((resolve, reject) => {
         jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
             if(err) reject(err);
@@ -111,6 +113,8 @@ exports.verify_token = function(req, res, next) {
     p.then((decoded) => {
         req.decoded = decoded;
         req.authToken = token;
+        req.gradingKey = crypto.createHash('SHA1').update(token).digest('hex');
+        console.log(req.gradingKey);
         next()
     })
         .catch(e => {
