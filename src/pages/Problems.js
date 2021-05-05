@@ -14,13 +14,12 @@ class Problems extends Component {
     componentDidMount() {
         fetch('/api', {
             headers : { 
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-             }
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
         })
-        .then(res => res.json())
-        .then(data => this.setState({ problems: data.problems}));
-
+            .then(res => res.json())
+            .then(data => this.setState({ problems: data.problems}));
     }
 
     render() {
