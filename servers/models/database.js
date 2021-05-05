@@ -55,3 +55,73 @@ exports.getFirstQuery = async(problem_id) => {
         return false;
     }
 }
+
+//token에 맞는 state를 반환하기 위해 DB table 생성
+exports.createDBtable = async(token) => {
+    try{
+        const connection = await pool.getConnection(async conn => conn);
+        try{
+            const query = `CREATE TABLE ${token}_elevators_DB (
+              id INT PRIMARY KEY,
+              floor INT,
+              status VARCHAR(255)
+          );  CREATE TABLE ${token}_calls_DB (
+               id INT PRIMARY KEY,
+               timestamp INT,
+               start INT,
+               end INT
+           );`
+            const [rows] = await connection.query(query);
+            connection.release();
+            return rows;
+        } catch(err2){
+            console.log("Query error!" + err2);
+            connection.release();
+            return false;
+        }
+    } catch(err){
+        console.log("DB error! " + err);
+        return false;
+    }
+}
+
+//token이 만료되었으면 token에 맞는 table 삭제
+exports.deleteDBtable = async(token) => {
+    try{
+        const connection = await pool.getConnection(async conn => conn);
+        try{
+            const query = `DROP TABLE ${token}_elevators_DB; DROP TABLE ${token}_calls_DB;`;
+            const [rows] = await connection.query(query);
+            connection.release();
+            return rows;
+        } catch(err2){
+            console.log("Query error!" + err2);
+            connection.release();
+            return false;
+        }
+    } catch(err){
+        console.log("DB error! " + err);
+        return false;
+    }
+}
+
+//token별 DB의 state update
+//update된 최종 상태의 완전한 elevators,calls를 인자로 넘겨줄 것.
+exports.updateDBtable = async(token,elevators,calls) => {
+    try{
+        const connection = await pool.getConnection(async conn => conn);
+        try{
+            const query = `TRUNCATE ${token}_elevators_DB ; TRUNCATE ${token}_calls_DB ;`;
+            const [rows] = await connection.query(query);
+            connection.release();
+            return rows;
+        } catch(err2){
+            console.log("Query error!" + err2);
+            connection.release();
+            return false;
+        }
+    } catch(err){
+        console.log("DB error! " + err);
+        return false;
+    }
+}
