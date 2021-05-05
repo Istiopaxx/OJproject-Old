@@ -38,15 +38,24 @@ npm run dev
 ## 기능
 #### 1. 문제 풀이
 
-user가 문제 “start API”에 JSON형태로 POST 요청을 보낸다.JSON 형태에는 user_id와 problem_id가 포함되어 있어야 한다.   
-데이터검증 후 토큰(problem_id , user_id 더한 값을 해싱)  + 문제의 초기상태 ( 문제DB에 저장해 둔 시나리오를 쿼리)   
- 를 생성하여 JSON 형태로 response.   
-“call API”에 get요청을 보내면 해당 토큰에 해당하는 state를 response.   
-(채점DB에 있는 토큰key에 맞는 value를 쿼리로 날려서 JSON형태로 가져온다.)    
-“action API”에 post요청을 보내면 문제에 해당하는 컨트롤러가 action을 state에 적용 함.    
+###### Start API
+user가 문제 `start API`에 JSON형태로 POST 요청을 보낸다.JSON 형태에는 user_id와 problem_id가 포함되어 있어야 한다.   
+데이터검증 후 토큰(problem_id , user_id 더한 값을 해싱)  + 문제의 초기상태 ( 문제DB에 저장해 둔 시나리오를 쿼리)를 생성하여 JSON 형태로 response.
+
+###### OnState API
+`onState API`에 get요청을 보내면 해당 토큰에 해당하는 state를 response.   
+(채점DB에 있는 토큰key에 맞는 value를 쿼리로 날려서 JSON형태로 가져온다.)
+
+###### Action API
+
+1. 전달된 명령에 따라 state 바꿔줌
+2. timestamp++
+3. 바뀐 timestamp에서 해당하는 call을 state에 추가
+4. 만약 call이 전부 비었으면 is_end를 true로 바꿔줌
+`action API`에 post요청을 보내면 문제에 해당하는 컨트롤러가 action을 state에 적용 함.    
 (채점DB에 있는 해당 value를 가져와서 변경 후 timestamp++,상태 변경. DB저장) 후 바뀐state를 response.   
-“action API” 컨트롤러 끝단에 timestamp의 값을 확인 후 실패,성공 여부를 확인 후 해당 조건이 성립한다면 채점DB의 state 삭제,    
-grade 컨트롤러에 state 전달후 grade 측정 후 채점 결과를 response, 채점번호DB에 user_id,problem_id,grade 등을 저장.   
+`action API` 컨트롤러 끝단에 timestamp의 값을 확인 후 실패,성공 여부를 확인 후 해당 조건이 성립한다면 채점DB의 state 삭제,    
+grade 컨트롤러에 state 전달후 grade 측정 후 채점 결과를 response, 채점번호DB에 user_id,problem_id,grade 등을 저장.
 
 #### 2. 유저 information
 #### 3. 채점 현황
