@@ -1,11 +1,43 @@
-# online judge
-============
+# Online Judge
+* * *
 
 ## 개요
----
 json 형태의 데이터를 주고받아 문제를 푸는 온라인 저지
 
-### 1. 기능 - 문제 풀이
+
+## 실행법
+API 서버와 Client 서버로 구분된 구조이다. 두 서버를 모두 실행하려면 `npm start`
+```
+npm start
+```
+#### API 서버 실행
+프로젝트 루트 디렉토리에서 터미널에 `node ./servers/app.js`
+```
+node ./servers/app.js
+```
+#### 개발 시 API 서버 실행
+소스코드를 수정한 후 저장하면 자동으로 서버를 재시작 해주는 nodemon을 적용하였다. 실행하려면 `npm run dev`
+```
+npm run dev
+```
+
+## 개발
+
+#### 브랜치 워크플로
+1. 각자 본인의 브랜치에서 작업 후 newdeal/oj-project main branch에 PR을 연다. 코멘트는 자세히 작성하고, 상대방은 코멘트 읽고 리뷰한 후 main에 merge한다. 
+2. PR을 merge했으면 다음 작업 전에 `main` 브랜치에서 `git fetch origin`과 `git merge origin/main`으로 작업물을 가져오고, 각자의 브랜치에서 `git merge main`으로 머지한 후 충돌나는 부분이 있는지 확인하고 작업한다.
+3. node_modules가 gitignore에 포함되어 있으므로 2번 작업 후 `npm install`으로 디펜던시 라이브러리를 설치해준다. 
+4. config.js 파일에 해싱 키와 DB url, 비번등을 설정해놓고 gitignore에 등록하였으므로 해당 파일에 수정사항이 생기면 꼭 공유!!
+
+#### 코딩 컨벤션 suggested by keisluv
+1. 변수(인스턴스)명은 camalCase, 함수명은 snake_case
+2. 생각나면 추가하자!!
+
+
+
+## 기능
+#### 1. 문제 풀이
+
 user가 문제 “start API”에 JSON형태로 POST 요청을 보낸다.JSON 형태에는 user_id와 problem_id가 포함되어 있어야 한다.   
 데이터검증 후 토큰(problem_id , user_id 더한 값을 해싱)  + 문제의 초기상태 ( 문제DB에 저장해 둔 시나리오를 쿼리)   
  를 생성하여 JSON 형태로 response.   
@@ -15,17 +47,13 @@ user가 문제 “start API”에 JSON형태로 POST 요청을 보낸다.JSON �
 (채점DB에 있는 해당 value를 가져와서 변경 후 timestamp++,상태 변경. DB저장) 후 바뀐state를 response.   
 “action API” 컨트롤러 끝단에 timestamp의 값을 확인 후 실패,성공 여부를 확인 후 해당 조건이 성립한다면 채점DB의 state 삭제,    
 grade 컨트롤러에 state 전달후 grade 측정 후 채점 결과를 response, 채점번호DB에 user_id,problem_id,grade 등을 저장.   
-### 2. 기능 - 유저 information
-### 3. 기능 - 채점 현황
-### 4. 구글,깃허브,카카오 계정 인증
+
+#### 2. 유저 information
+#### 3. 채점 현황
+#### 4. 구글,깃허브,카카오 계정 인증
 
 * * *
 
-
-
-## 코딩 컨벤션 suggested by keisluv
-1. 변수(인스턴스)명은 camalCase, 함수명은 snake_case
-2. 생각나면 추가하자!!
 
 
 

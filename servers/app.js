@@ -1,3 +1,4 @@
+
 // load dependency
 const express = require('express');
 const http = require('http');
@@ -10,7 +11,7 @@ const onStateRouter = require('./routes/onState');
 
 
 // load config
-const config = require('./config');
+
 const port = process.env.PORT || 3001;
 
 
@@ -28,7 +29,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 //set secret key for jwt
-app.set('jwt-secret', config.secret);
 
 
 // server open
