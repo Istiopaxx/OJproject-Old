@@ -1,15 +1,16 @@
 const jwt = require('jsonwebtoken');
+const jwt_config = require('../config/jwt_config.json');
 
 // const User = require('../models/user');
 // const Problem = require('../models/problem');
 
 
 const crypto = require('crypto');
+const secret = jwt_config.secret;
 
 
 exports.make_token = function(req, res, next) {
     const { userId, problemId } = req.body;
-    const secret = req.app.get('jwt-secret');
 
     console.log(userId, problemId);
 
