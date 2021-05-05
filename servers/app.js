@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 // load dependency
 const express = require('express');
 const http = require('http');
@@ -18,6 +11,7 @@ const onStateRouter = require('./routes/onState');
 
 
 // load config
+
 const port = process.env.PORT || 3001;
 
 
