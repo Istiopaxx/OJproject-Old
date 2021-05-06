@@ -7,33 +7,44 @@
 
 // dummy data
 const data = {
-    "state": {
-        "id": 0,
+    "gradingData" : {
         "timestamp": 0,
-        "data": {},
+        "states": [
+            {
+                "id": 0,
+                "floor": 6,
+                "passengers": [
+                    {
+                        "id": 0,
+                        "timestamp": 0,
+                        "start": 6,
+                        "end": 1
+                    }
+                ],
+                "status": "OPENED"
+            },
+        ],
         "tickets": [],
         "isEnd": false,
     },
-    "tickets": {
-        "maxTimestamp": 1,
-        "ticketOfTime": [
-            {
-                "id": 0,
-                "timestamp": 0,
-                "start": 6,
-                "end": 1,
-            },
-        ],
-    },
+    "entire_tickets": [
+        {
+            "id": 0,
+            "timestamp": 0,
+            "start": 6,
+            "end": 1,
+        },
+    ]
 };
 
 
+// req에 첨부된 data에서 state를 가져와서 token과 함께 respond
 exports.respond_state = function(req, res) {
-    const state = req.state;
+    const gradingData = req.data.gradingData;
     const token = req.authToken;
     const ret = {
         "token": token,
-        "state": state,
+        "gradingData": gradingData,
     }
     res.status(200).json(ret);
 }
@@ -74,23 +85,23 @@ exports.create_first_state = function(req, res, next) {
 
     
     //temporary implementation
-    req.state = data.state;
+    req.data = data;
     next();
 }
 
 
-// 채점DB에서 state를 가져와 req에 첨부
+// 채점DB에서 token에 해당하는 데이터를 가져와 req에 첨부
 exports.get_state = function(req, res, next) {
     /*
     Grading.hget(req.gradingKey, (err, reply) => {
         if(err) res.status(500).send('no data in Grading DB');
-        req.state = reply;
+        req.data = reply;
         next();
     });
     */
 
     // temporary implementation
-    req.state = data.state;
+    req.data = data;
     next();
 }
 

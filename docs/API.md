@@ -55,9 +55,9 @@ Content-Type: application/json
 ```json
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsInByb2JsZW0iOiJlbGV2YXRvciIsImlhdCI6MTYxOTc4NTAxMywiZXhwIjoxNjE5Nzg1NjEzfQ.sz8vYKR2kPvJ3NLErTZ3m6J1_GWloX7JNhFLyKUGreY",
-    "state": {
+    "gradingData": {
         "timestamp": 0,
-        "data": {},
+        "states": [],
         "tickets": [],
         "isEnd": false,
     },
@@ -68,16 +68,18 @@ Content-Type: application/json
 | ---- | ---- | ----------- |
 | `token` | string | Token (Request header의 `x-auth-token` 값과 동일) |
 | `timestamp` | integer | 현재 timestamp |
-| `data` | array of [`data`](#data) | 문제 환경의 상태 |
+| `states` | array of [`state`](#state) | 문제 환경의 상태 |
 | `tickets` | array of [`ticket`](#ticket) | 처리해야 할 요청 |
 | `isEnd` | boolean | 채점 완료 여부 |
 
 
 
 
+
 <a name="onStateApi"></a>
+
 ## onState API
-현재 `timestamp` 기준으로 처리해야하는 `ticket`의 목록을 포함한 `state` 반환한다.
+현재 `timestamp` 기준으로 처리해야하는 `ticket`의 목록을 포함한 `state`를 반환한다.
 
 #### Request
 
@@ -103,9 +105,9 @@ X-Auth-Token: {Token}
 ```json
 {
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsInByb2JsZW0iOiJlbGV2YXRvciIsImlhdCI6MTYxOTc4NTAxMywiZXhwIjoxNjE5Nzg1NjEzfQ.sz8vYKR2kPvJ3NLErTZ3m6J1_GWloX7JNhFLyKUGreY",
-    "state": {
+    "gradingData": {
         "timestamp": 0,
-        "data": {},
+        "states": [],
         "tickets": [],
         "isEnd": false,
     },
@@ -116,31 +118,21 @@ X-Auth-Token: {Token}
 | ---- | ---- | ----------- |
 | `token` | string | Token (Request header의 `x-auth-token` 값과 동일) |
 | `timestamp` | integer | 현재 timestamp |
-| `data` | array of [`data`](#data) | 문제 환경의 상태 |
+| `states` | array of [`state`](#state) | 문제 환경의 상태 |
 | `tickets` | array of [`ticket`](#ticket) | 처리해야 할 요청 |
 | `isEnd` | boolean | 채점 완료 여부 |
 
 
 
-* * *
-* * *
 
 
-
-
-
-
-
-
-
-
-
-
-<!--
 
 <a name="action-api"></a>
+
 ## Action API
-엘리베이터에 명령을 실행한다.
+주어진 state에 대해 정의된 규칙에 따라 명령을 실행한다.
+
+**이후 수정 사항**
 + `commands`에는 모든 엘리베이터의 명령이 포함되어 있어야 하며, 각 엘리베이터 당 하나의 명령만 전달할 수 있다.
 + 예를 들어 엘리베이터가 두 대인 경우 두 대 각각에 대한 명령이 있어야 한다.
 
@@ -158,7 +150,16 @@ Content-Type: application/json
 
 ```json
 {
-  "commands": []
+  "commands": [
+    {
+      "elevator_id": 0,
+      "command": "OPEN",
+    },
+    {
+      "elevator_id": 1,
+      "command": "STOP"
+    }
+  ]
 }
 ```
 
@@ -166,30 +167,15 @@ Content-Type: application/json
 | ---- | ---- | ----------- |
 | `commands` | array of [`Command`](#command) | 엘리베이터를 제어하기 위한 명령 |
 
-#### Example
 
-  ```json
-  {
-    "commands": [
-      {
-        "elevator_id": 0,
-        "command": "ENTER",
-        "call_ids": [0]
-      },
-      {
-        "elevator_id": 1,
-        "command": "STOP"
-      }
-    ]
-  }
-  ```
+
 
 ### Response
 
 | Status Code | 설명 |
 | ----------- | ---- |
 | 200 OK | 성공 |
-| 400 Bad Request | 해당 명령을 실행할 수 없음 (실행할 수 없는 상태일 때, 엘리베이터 수와 Command 수가 일치하지 않을 때, 엘리베이터 정원을 초과하여 태울 때) |
+| 400 Bad Request | 해당 명령을 실행할 수 없음 (문제 조건에 알맞지 않은 명령) |
 | 401 Unauthorized | `X-Auth-Token` Header가 잘못됨 |
 | 500 Internal Server Error | 서버 에러, 문의 필요 |
 
@@ -197,10 +183,33 @@ Content-Type: application/json
 
 ```json
 {
-  "token": "",
-  "timestamp": 0,
-  "elevators": [],
-  "is_end": false
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsInByb2JsZW0iOiJlbGV2YXRvciIsImlhdCI6MTYxOTc4NTAxMywiZXhwIjoxNjE5Nzg1NjEzfQ.sz8vYKR2kPvJ3NLErTZ3m6J1_GWloX7JNhFLyKUGreY",
+  "gradingData": {
+    "timestamp": 8,
+    "states": [
+      {
+        "id": 0,
+        "floor": 6,
+        "passengers": [
+          {
+            "id": 0,
+            "timestamp": 0,
+            "start": 6,
+            "end": 1
+          }
+        ],
+        "status": "OPENED"
+      },
+      {
+        "id": 1,
+        "floor": 1,
+        "passengers": [],
+        "status": "STOPPED"
+      }
+    ],
+    "tickets": [],
+    "isEnd": false
+  }
 }
 ```
 
@@ -208,46 +217,21 @@ Content-Type: application/json
 | ---- | ---- | ----------- |
 | `token` | string | Token (Request header의 `X-Auth-Token` 값과 동일)
 | `timestamp` | integer | 현재 timestamp
-| `elevators` | array of [`Elevator`](#elevator) | 엘리베이터의 상태
-| `is_end` | boolean | 모든 승객의 수송 완료 여부
+| `states` | array of [`state`](#state) | 문제 환경의 상태 |
+| `tickets` | array of [`ticket`](#ticket) | 처리해야 할 요청 |
+| `isEnd` | boolean | 채점 완료 여부 |
 
-#### Example
 
-```json
-{
-  "token": "TVqpM5MX0amQqhrYKd3ZwMZn3Im6y4ovJwEa_A1-2d6mBpl4QhwJmmkrrvG4MsaD+mG44dL0aC0RNYL",
-  "timestamp": 8,
-  "elevators": [
-    {
-      "id": 0,
-      "floor": 6,
-      "passengers": [
-        {
-          "id": 0,
-          "timestamp": 0,
-          "start": 6,
-          "end": 1
-        }
-      ],
-      "status": "OPENED"
-    },
-    {
-      "id": 1,
-      "floor": 1,
-      "passengers": [],
-      "status": "STOPPED"
-    }
-  ],
-  "is_end": false
-}
-```
+
+
 
 
 ## Resource
 
-<a name="elevator"></a>
-### Elevator
-엘리베이터 하나의 상태를 표현한다.
+<a name="data"></a>
+### State
+데이터의 상태를 표현한다. 
+엘리베이터 문제에서는 엘리베이터 하나의 상태를 표현한다.
 
 ```json
 {
@@ -265,9 +249,10 @@ Content-Type: application/json
 | `passengers` | array of [`Call`](#call) | 해당 엘리베이터에 타고 있는 승객들을 표현하는 `Call`의 목록 |
 | `status` | string | 해당 엘리베이터 상태 |
 
-<a name="call"></a>
-### Call
-`Call`을 표현한다.
+<a name="ticket"></a>
+### Ticket
+채점자가 처리해야 할 요청을 표현한다. 
+엘리베이터 문제에서는 엘리베이터 이용자의 `Call`을 표현한다.
 
 ```json
 {
@@ -287,21 +272,18 @@ Content-Type: application/json
 
 <a name="command"></a>
 ### Command
-엘리베이터 제어 명령을 표현한다.
+환경을 어떻게 조작할지 명령을 표현한다. 
+엘리베이터 문제에서는 엘리베이터 제어 명령을 표현한다.
 
 ```json
 {
   "elevator_id": 0,
   "command": "ENTER",
-  "call_ids": [0]
 }
 ```
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | `elevator_id` | integer | 명령을 실행할 엘리베이터의 번호 ([`Elevator`](#elevator)의 `id`) |
-| `command` | string | 실행할 명령 (`STOP`, `OPEN`, `ENTER`, `EXIT`, `CLOSE`, `UP`, `DOWN` 중 하나) |
-| `call_ids` | array of integer | *(optional)* 태우거나 내려줄 [`Call`](#call)의 `id` |
+| `command` | string | 실행할 명령 (`STOP`, `OPEN`, `CLOSE`, `UP`, `DOWN` 중 하나) |
 
-
--->
