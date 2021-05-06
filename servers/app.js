@@ -7,6 +7,7 @@ const morgan = require('morgan');
 
 const startRouter = require('./routes/start');
 const onStateRouter = require('./routes/onState');
+const actionRouter = require('./routes/action');
 
 
 
@@ -41,6 +42,7 @@ server.listen(port, () => {
 // api route
 app.use('/api/start', startRouter);
 app.use('/api/onState', onStateRouter);
+app.use('/api/action', actionRouter);
 
 let data = {
     "problems": [

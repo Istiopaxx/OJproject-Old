@@ -41,9 +41,9 @@ exports.exec_command = function(req, res, next) {
         gradingData.states[elevatorId].status = "OPENED";
     }
 
-    const close_elevator = function(state, elevatorId) {
-        let data = state.data;
-        let elevator = data[elevatorId];
+    const close_elevator = function(gradingData, elevatorId) {
+        let states = gradingData.states;
+        let elevator = states[elevatorId];
 
         // UPWARD, DOWNWARD, STOPPED 상태에서 CLOSE 명령 시 오류 발생
         if(elevator.status == "UPWARD" || elevator.status == "DOWNWARD" || elevator.status == "STOPPED") {
@@ -54,9 +54,9 @@ exports.exec_command = function(req, res, next) {
         gradingData.states[elevatorId].status = "STOPPED";
     }
 
-    const stop_elevator = function(state, elevatorId) {
-        let data = state.data;
-        let elevator = data[elevatorId];
+    const stop_elevator = function(gradingData, elevatorId) {
+        let states = gradingData.states;
+        let elevator = states[elevatorId];
 
         // OPENED 상태에서 STOP 명령 시 오류 발생
         if(elevator.status == "OPENED") {
@@ -69,9 +69,9 @@ exports.exec_command = function(req, res, next) {
 
     
 
-    const up_elevator = function(state, elevatorId, maxFloor) {
-        let data = state.data;
-        let elevator = data[elevatorId];
+    const up_elevator = function(gradingData, elevatorId, maxFloor) {
+        let states = gradingData.states;
+        let elevator = states[elevatorId];
         let floor = elevator.floor;
 
         // DOWNWARD, OPENED, 최고층 상태에서 UPWARD 명령 시 오류 발생
@@ -86,9 +86,9 @@ exports.exec_command = function(req, res, next) {
     
     }
 
-    const down_elevator = function(state, elevatorId, minFloor) {
-        let data = state.data;
-        let elevator = data[elevatorId];
+    const down_elevator = function(gradingData, elevatorId, minFloor) {
+        let states = gradingData.states;
+        let elevator = states[elevatorId];
         let floor = elevator.floor;
 
         // UPWARD, OPENED, 최저층 상태에서 DOWNWARD 명령 시 오류 발생
@@ -109,6 +109,7 @@ exports.exec_command = function(req, res, next) {
             throw new Error('no state/commands');
         }
 
+        // command가 엘레베이터 갯수보다 많은 경우 
         if(commands.length > 4) {
             throw new Error('too many commands');
         }
@@ -151,9 +152,82 @@ exports.exec_command = function(req, res, next) {
 
 
 
+exports.increase_timestamp = function(req, res, next) {
+    let data = req.data;
+    let gradingData = data.gradingData;
+    let nowTimestamp = gradingData.timestamp;
+
+    req.data.gradingData.timestamp = nowTimestamp + 1;
+    next();
+}
+
+
+exports.append_tickets = function(req, res, next) {
+    let data = req.data;
+    const entire_tickets = data.entire_tickets;
+    let gradingData = data.gradingData;
+    let tickets = gradingData.tickets;
+    let nowTimestamp = gradingData.timestamp;
+
+    let temp = [];
+    for(let i = 0; i < entire_tickets.length; i++) {
+        const ticket = entire_tickets[i];
+        if(ticket.timestamp == nowTimestamp) {
+            tickets.push(ticket);
+        }
+        else {
+            temp.push(ticket);
+        }
+    }
+
+    req.data.gradingData.tickets = tickets;
+    req.data.entire_tickets = temp;
+    next();
+    
+}
 
 
 
+exports.check_ifend = function(req, res, next) {
+    const data = req.data;
+
+    const check_elevator_ifend = function(data) {
+        const entire_tickets = data.entire_tickets;
+        const gradingData = data.gradingData;
+        const states = gradingData.states;
+        const tickets = gradingData.tickets;
+        
+        let ifEmptyEntireTickets = false;
+        let ifEmptyStates = true;
+        let ifEmptytickets = false;
+        if(entire_tickets.length == 0) {
+            ifEmptyEntireTickets = true;
+        }
+        for(let i = 0; i < states.length; i++) {
+            if(states[i].passengers.length != 0) {
+                ifEmptyStates = false;
+            }
+        }
+        if(tickets.length == 0) {
+            ifEmptytickets = true;
+        }
+
+        if(ifEmptyEntireTickets && ifEmptyStates && ifEmptytickets) {
+            data.gradingData.isEnd = true;
+        }
+    }
+
+    try {
+        check_elevator_ifend(data);
+        req.data = data;
+        next();
+    }
+    catch(err) {
+        console.log("Error: " + err);
+        res.status(500).send(err);
+    }
+
+}
 
 
 
