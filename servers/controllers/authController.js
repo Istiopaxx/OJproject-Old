@@ -106,7 +106,7 @@ exports.verify_token = function(req, res, next) {
     }
 
     const p = new Promise((resolve, reject) => {
-        jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
+        jwt.verify(token, secret, (err, decoded) => {
             if(err) reject(err);
             resolve(decoded);
         });

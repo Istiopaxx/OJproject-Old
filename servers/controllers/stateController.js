@@ -3,39 +3,7 @@
 //const Problem = require('../models/problem');
 //const Grading = require('../models/grading');
 
-
-
-// dummy data
-const data = {
-    "gradingData" : {
-        "timestamp": 0,
-        "states": [
-            {
-                "id": 0,
-                "floor": 6,
-                "passengers": [
-                    {
-                        "id": 0,
-                        "timestamp": 0,
-                        "start": 6,
-                        "end": 1
-                    }
-                ],
-                "status": "OPENED"
-            },
-        ],
-        "tickets": [],
-        "isEnd": false,
-    },
-    "entire_tickets": [
-        {
-            "id": 0,
-            "timestamp": 0,
-            "start": 6,
-            "end": 1,
-        },
-    ]
-};
+const db = require('../app');
 
 
 // req에 첨부된 data에서 state를 가져와서 token과 함께 respond
@@ -62,6 +30,8 @@ exports.create_first_state = function(req, res, next) {
 
     
     //temporary implementation
+    const token = req.gradingKey;
+    let data = db.create_data(token);
     req.data = data;
     next();
 };
@@ -72,7 +42,11 @@ exports.get_state = function(req, res, next) {
     // 채점DB에서 token에 해당하는 데이터를 SELECT
 
     // temporary implementation
+    
+    const token = req.gradingKey;
+    let data = db.select_data(token);
     req.data = data;
+    console.log(req.data);
     next();
 };
 
@@ -80,19 +54,25 @@ exports.get_state = function(req, res, next) {
 exports.update_state = function(req, res, next) {
     // 채점DB에서 token에 해당하는 데이터를 UPDATE
 
-
+    const token = req.gradingKey;
+    let data = req.data;
+    db.update_data(token, data);
     next();
 };
 
 
 exports.delete_state = function(req, res, next) {
+
+    const token = req.gradingKey;
+    // 채점DB에서 token에 해당하는 데이터를 DELETE
+
+
     if(!req.decoded) {
-        // 토큰 만료시 채점DB에서 token에 해당하는 데이터를 DELETE
+        // 토큰 만료시 실패
         res.status(400).send('token expired');
     }
     else {
         // 토큰이 만료된게 아니면 채점이 끝난 경우
-        // 채점DB에서 token에 해당하는 데이터를 DELETE
         next();
     }
     
