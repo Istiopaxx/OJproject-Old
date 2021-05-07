@@ -46,14 +46,14 @@ exports.make_token = function(req, res, next) {
                     if(err) reject(err);
                     resolve(token);
                 }
-            )
+            );
         });
         return p;
-    }
+    };
 
     const append_token = function(token) {
         req.authToken = token;
-    }
+    };
 
 
     const append_grading_key = function() {
@@ -61,7 +61,7 @@ exports.make_token = function(req, res, next) {
         req.gradingKey = crypto.createHash('SHA1').update(token).digest('hex');
         console.log(req.gradingKey);
         next();
-    }
+    };
 
     /*
     // 데이터베이스 쿼리가 promise를 반환한다고 가정
@@ -74,11 +74,11 @@ exports.make_token = function(req, res, next) {
     let userInstance = new Promise((resolve, reject) => {
         resolve(userId);
         reject('');
-    })
+    });
     let problemInstance = new Promise((resolve, reject) => {
         resolve(problemId);
         reject('');
-    })
+    });
     
 
     Promise.all([userInstance, problemInstance]).then(values => {
@@ -88,10 +88,10 @@ exports.make_token = function(req, res, next) {
             .catch(e => {
                 console.log("Error: " + e);
                 res.status(500).send('something broke in auth');
-            })
+            });
     });
     
-}
+};
 
 
 
@@ -109,19 +109,24 @@ exports.verify_token = function(req, res, next) {
         jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
             if(err) reject(err);
             resolve(decoded);
-        })
+        });
     });
     p.then((decoded) => {
         req.decoded = decoded;
         req.authToken = token;
         req.gradingKey = crypto.createHash('SHA1').update(token).digest('hex');
         console.log(req.gradingKey);
-        next()
+        next('route');
     })
-        .catch(e => {
-            res.status(401).send('Unauthorized');
+        .catch(err => {
+            if(err.name == 'TokenExpiredError') {
+                next();
+            }
+            else {
+                res.status(401).send('Unauthorized');
+            }
         });
-}
+};
 
 
 

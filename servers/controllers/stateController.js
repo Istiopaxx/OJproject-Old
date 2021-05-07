@@ -45,9 +45,9 @@ exports.respond_state = function(req, res) {
     const ret = {
         "token": token,
         "gradingData": gradingData,
-    }
+    };
     res.status(200).json(ret);
-}
+};
 
 
 // start api 호출 시 발급된 토큰으로 채점DB에 초기 state와 티켓배열을 넣음
@@ -64,7 +64,7 @@ exports.create_first_state = function(req, res, next) {
     //temporary implementation
     req.data = data;
     next();
-}
+};
 
 
 // 채점DB에서 token에 해당하는 데이터를 가져와 req에 첨부
@@ -74,7 +74,7 @@ exports.get_state = function(req, res, next) {
     // temporary implementation
     req.data = data;
     next();
-}
+};
 
 
 exports.update_state = function(req, res, next) {
@@ -82,14 +82,23 @@ exports.update_state = function(req, res, next) {
 
 
     next();
-}
+};
 
 
 exports.delete_state = function(req, res, next) {
-    // 채점DB에서 token에 해당하는 데이터를 DELETE
+    if(!req.decoded) {
+        // 토큰 만료시 채점DB에서 token에 해당하는 데이터를 DELETE
+        res.status(400).send('token expired');
+    }
+    else {
+        // 토큰이 만료된게 아니면 채점이 끝난 경우
+        // 채점DB에서 token에 해당하는 데이터를 DELETE
+        next();
+    }
+    
+};
 
-    next();
-}
+
 
 
 
