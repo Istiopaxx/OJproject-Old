@@ -23,6 +23,10 @@ module.exports = {
             "error",
             4
         ],
+        "semi": [
+            1,
+            "always"
+        ],
         // suppress errors for missing 'import React' in files
         "react/react-in-jsx-scope": "off",
         // allow jsx syntax in js files (for next.js project)
