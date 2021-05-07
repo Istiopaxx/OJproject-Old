@@ -1,7 +1,7 @@
 
 // const { Controller } = require("@nestjs/common");
 var mysql = require("mysql2/promise");
-var db_config = require('../config/mysql_config.json')
+var db_config = require('../config/mysql_config.json');
 
 console.log(db_config.host);
 console.log(db_config.user);
@@ -31,7 +31,7 @@ function AddQuery(rows,problem_id){
         allQuery.calls = rows[2];
         allQuery.is_end = rows[1][idx].is_end;
         resolve(allQuery);
-    })
+    });
 }
 
 //problem_id를 받아 문제에 맞는 첫 상태를 json형태로 반환
@@ -39,7 +39,7 @@ exports.getFirstQuery = async(problem_id) => {
     try{
         const connection = await pool.getConnection(async conn => conn);
         try{
-            const query = "SELECT * FROM elevatorsDB; SELECT * FROM problemDB; SELECT * FROM callsDB"
+            const query = "SELECT * FROM elevatorsDB; SELECT * FROM problemDB; SELECT * FROM callsDB";
             const [rows] = await connection.query(query);
             connection.release();
             const ret = await AddQuery(rows);
@@ -54,7 +54,7 @@ exports.getFirstQuery = async(problem_id) => {
         console.log("DB error!" + err);
         return false;
     }
-}
+};
 
 //token에 맞는 state를 반환하기 위해 DB table 생성
 exports.createDBtable = async(token) => {
@@ -70,7 +70,7 @@ exports.createDBtable = async(token) => {
                timestamp INT,
                start INT,
                end INT
-           );`
+           );`;
             const [rows] = await connection.query(query);
             connection.release();
             return rows;
@@ -83,7 +83,7 @@ exports.createDBtable = async(token) => {
         console.log("DB error! " + err);
         return false;
     }
-}
+};
 
 //token이 만료되었으면 token에 맞는 table 삭제
 exports.deleteDBtable = async(token) => {
@@ -103,7 +103,7 @@ exports.deleteDBtable = async(token) => {
         console.log("DB error! " + err);
         return false;
     }
-}
+};
 
 //token별 DB의 state update
 //update된 최종 상태의 완전한 elevators,calls를 인자로 넘겨줄 것.
@@ -124,4 +124,6 @@ exports.updateDBtable = async(token,elevators,calls) => {
         console.log("DB error! " + err);
         return false;
     }
-}
+};
+
+//select
