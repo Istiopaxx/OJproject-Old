@@ -45,9 +45,14 @@ exports.get_state = function(req, res, next) {
     
     const token = req.gradingKey;
     let data = db.select_data(token);
-    req.data = data;
-    console.log(req.data);
-    next();
+    if (data == undefined) {
+        res.status(401).send('Already End');
+    }
+    else {
+        req.data = data;
+        console.log(req.data);
+        next();
+    }
 };
 
 
@@ -65,7 +70,7 @@ exports.delete_state = function(req, res, next) {
 
     const token = req.gradingKey;
     // 채점DB에서 token에 해당하는 데이터를 DELETE
-
+    db.delete_data(token);
 
     if(!req.decoded) {
         // 토큰 만료시 실패

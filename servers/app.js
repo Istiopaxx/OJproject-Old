@@ -11,8 +11,6 @@ const actionRouter = require('./routes/action');
 
 
 
-const fs = require('fs');
-const parse = require('csv-parse/lib/sync');
 // load config
 
 const port = process.env.PORT || 3001;
@@ -22,10 +20,12 @@ const port = process.env.PORT || 3001;
 // =========================================================
 
 
+const fs = require('fs');
+const parse = require('csv-parse/lib/sync');
 
-let tickets = fs.readFileSync("C:/Users/Choi Min jun/oj-project/servers/p0.txt", 'utf8');
+let entire_tickets_file = fs.readFileSync("./servers/p0.txt", 'utf8');
 
-const outputRaw = parse(tickets);
+const outputRaw = parse(entire_tickets_file);
 
 let output = [];
 
@@ -44,7 +44,7 @@ const firstdata = {
         "timestamp": 0,
         "states": [
             {
-                "id": 0,
+                "elevator_id": 0,
                 "floor": 1,
                 "passengers": [],
                 "status": "STOPPED"
@@ -73,7 +73,20 @@ for(let i = 0; i < output.length; i++) {
 
 console.log(firstdata.entire_tickets);
 
+let tickets = [];
+let temp = [];
+for (let i = 0; i < firstdata.entire_tickets.length; i++) {
+    const ticket = firstdata.entire_tickets[i];
+    if (ticket.timestamp == 0) {
+        tickets.push(ticket);
+    }
+    else {
+        temp.push(ticket);
+    }
+}
 
+firstdata.gradingData.tickets = tickets;
+firstdata.entire_tickets = temp;
 
 
 let dataList = {};
