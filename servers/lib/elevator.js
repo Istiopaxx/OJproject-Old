@@ -47,7 +47,7 @@ exports.init_elevator_data = function(problemId) {
     }
 
 
-    let entire_tickets_file = fs.readFileSync("../p0.txt", 'utf8');
+    let entire_tickets_file = fs.readFileSync("./servers/p0.txt", 'utf8');
     const outputRaw = parse(entire_tickets_file);
     let output = [];
 
@@ -91,7 +91,7 @@ exports.init_elevator_data = function(problemId) {
     firstdata.entire_tickets = temp;
 
 
-    return firstdata.gradingData, firstdata.entire_tickets;
+    return firstdata;
 };
 
 

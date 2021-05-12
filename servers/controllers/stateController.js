@@ -3,7 +3,7 @@
 //const Problem = require('../models/problem');
 //const Grading = require('../models/grading');
 
-const db = require('../app');
+const gradingdb = require('../models/mongodb');
 
 
 // req에 첨부된 data에서 state를 가져와서 token과 함께 respond
@@ -20,7 +20,7 @@ exports.respond_state = function(req, res) {
 
 // start api 호출 시 발급된 토큰으로 채점DB에 초기 state와 티켓배열을 넣음
 // 성공하면 req.state 에 초기 state를 첨부
-exports.create_first_state = function(req, res, next) {
+exports.create_first_state = async function(req, res, next) {
     // problem db에서 가져오는 경우
 
     // 랜덤 생성
@@ -31,20 +31,20 @@ exports.create_first_state = function(req, res, next) {
     
     //temporary implementation
     const token = req.gradingKey;
-    let data = db.create_data(token);
+    let data = await gradingdb.create(token);
     req.data = data;
     next();
 };
 
 
 // 채점DB에서 token에 해당하는 데이터를 가져와 req에 첨부
-exports.get_state = function(req, res, next) {
+exports.get_state = async function(req, res, next) {
     // 채점DB에서 token에 해당하는 데이터를 SELECT
 
     // temporary implementation
     
     const token = req.gradingKey;
-    let data = db.select_data(token);
+    let data = await gradingdb.select(token);
     if (data == undefined) {
         res.status(401).send('Already End');
     }
@@ -56,21 +56,21 @@ exports.get_state = function(req, res, next) {
 };
 
 
-exports.update_state = function(req, res, next) {
+exports.update_state = async function(req, res, next) {
     // 채점DB에서 token에 해당하는 데이터를 UPDATE
 
     const token = req.gradingKey;
     let data = req.data;
-    db.update_data(token, data);
+    const ret = await gradingdb.update_data(token, data);
     next();
 };
 
 
-exports.delete_state = function(req, res, next) {
+exports.delete_state = async function(req, res, next) {
 
     const token = req.gradingKey;
     // 채점DB에서 token에 해당하는 데이터를 DELETE
-    db.delete_data(token);
+    const data = await gradingdb.delete_data(token);
 
     if(!req.decoded) {
         // 토큰 만료시 실패
