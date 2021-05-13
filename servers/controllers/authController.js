@@ -12,7 +12,6 @@ const secret = jwt_config.secret;
 exports.make_token = function(req, res, next) {
     const { userId, problemId } = req.body;
 
-    console.log(userId, problemId);
     if (!userId || !problemId) {
         return res.status(400).send('No user/problem');
     }
@@ -59,7 +58,6 @@ exports.make_token = function(req, res, next) {
     const append_grading_key = function() {
         const token = req.authToken;
         req.gradingKey = crypto.createHash('SHA1').update(token).digest('hex');
-        console.log(req.gradingKey);
         next();
     };
 
@@ -115,7 +113,6 @@ exports.verify_token = function(req, res, next) {
         req.decoded = decoded;
         req.authToken = token;
         req.gradingKey = crypto.createHash('SHA1').update(token).digest('hex');
-        console.log(req.gradingKey);
         next('route');
     })
         .catch(err => {

@@ -38,7 +38,7 @@ exports.init_elevator_data = function(problemId) {
         const passengers = [];
         const status = "STOPPED";
         const temp = {
-            "id": id,
+            "elevator_id": id,
             "floor": floor,
             "passengers": passengers,
             "status": status
@@ -268,6 +268,5 @@ exports.check_elevator_ifend = function (data) {
 
     if (is_empty_entire_tickets(entire_tickets) && is_empty_states(states) && is_empty_tickets(tickets)) {
         data.gradingData.isEnd = true;
-        console.log(data.gradingData.isEnd);
     }
 };

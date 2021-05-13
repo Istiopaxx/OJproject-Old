@@ -8,114 +8,12 @@ const morgan = require('morgan');
 const startRouter = require('./routes/start');
 const onStateRouter = require('./routes/onState');
 const actionRouter = require('./routes/action');
-
-
+const mongodb = require('./models/mongodb');
+mongodb.connect();
 
 // load config
 
 const port = process.env.PORT || 3001;
-
-
-
-// =========================================================
-
-
-const fs = require('fs');
-const parse = require('csv-parse/lib/sync');
-
-let entire_tickets_file = fs.readFileSync("./servers/p0.txt", 'utf8');
-
-const outputRaw = parse(entire_tickets_file);
-
-let output = [];
-
-for(let i = 0; i < outputRaw.length; i++) {
-    output.push([]);
-    for(let j = 0; j < outputRaw[i].length; j++) {
-        let int = parseInt(outputRaw[i][j]);
-        output[i].push(int);
-    }
-}
-
-console.log(output);
-
-const firstdata = {
-    "gradingData" : {
-        "timestamp": 0,
-        "states": [
-            {
-                "elevator_id": 0,
-                "floor": 1,
-                "passengers": [],
-                "status": "STOPPED"
-            },
-        ],
-        "tickets": [],
-        "isEnd": false,
-    },
-    "entire_tickets": []
-};
-
-for(let i = 0; i < output.length; i++) {
-    const id = output[i][1];
-    const timestamp = output[i][0];
-    const start = output[i][2];
-    const end = output[i][3];
-
-    const temp = {
-        "id": id,
-        "timestamp": timestamp,
-        "start": start,
-        "end": end
-    };
-    firstdata.entire_tickets.push(temp);
-}
-
-console.log(firstdata.entire_tickets);
-
-let tickets = [];
-let temp = [];
-for (let i = 0; i < firstdata.entire_tickets.length; i++) {
-    const ticket = firstdata.entire_tickets[i];
-    if (ticket.timestamp == 0) {
-        tickets.push(ticket);
-    }
-    else {
-        temp.push(ticket);
-    }
-}
-
-firstdata.gradingData.tickets = tickets;
-firstdata.entire_tickets = temp;
-
-
-let dataList = {};
-
-exports.create_data = function(token) {
-    dataList[token] = firstdata;
-    return firstdata;
-};
-
-exports.select_data = function(token) {
-    return dataList[token];
-};
-
-exports.update_data = function(token, data) {
-    dataList[token] = data;
-};
-
-exports.delete_data = function(token) {
-    delete dataList[token];
-};
-
-
-
-
-
-
-
-
-
 
 
 
@@ -161,50 +59,6 @@ let data = {
     ]
 };
 app.get('/api', (req, res) => res.json(data));
-
-
-
-
-
-
-
-
-
-const dataaa = {
-    "gradingData" : {
-        "timestamp": 0,
-        "states": [
-            {
-                "id": 0,
-                "floor": 6,
-                "passengers": [
-                    {
-                        "id": 0,
-                        "timestamp": 0,
-                        "start": 6,
-                        "end": 1
-                    }
-                ],
-                "status": "OPENED"
-            },
-        ],
-        "tickets": [],
-        "isEnd": false,
-    },
-    "entire_tickets": [
-        {
-            "id": 0,
-            "timestamp": 0,
-            "start": 6,
-            "end": 1,
-        },
-    ]
-};
-
-
-
-
-
 
 
 

@@ -7,7 +7,7 @@ const gradingdb = require('../models/mongodb');
 
 
 // req에 첨부된 data에서 state를 가져와서 token과 함께 respond
-exports.respond_state = function(req, res) {
+exports.respond_state = function (req, res) {
     const gradingData = req.data.gradingData;
     const token = req.authToken;
     const ret = {
@@ -44,14 +44,13 @@ exports.get_state = async function(req, res, next) {
     // temporary implementation
     
     const token = req.gradingKey;
-    let data = await gradingdb.select(token);
-    if (data == undefined) {
-        res.status(401).send('Already End');
-    }
-    else {
+    try {
+        let data = await gradingdb.select(token);
         req.data = data;
-        console.log(req.data);
         next();
+    }
+    catch (err) {
+        res.status(401).send('No data for token in DB');
     }
 };
 
@@ -61,7 +60,7 @@ exports.update_state = async function(req, res, next) {
 
     const token = req.gradingKey;
     let data = req.data;
-    const ret = await gradingdb.update_data(token, data);
+    const ret = await gradingdb.update(token, data);
     next();
 };
 
@@ -70,8 +69,8 @@ exports.delete_state = async function(req, res, next) {
 
     const token = req.gradingKey;
     // 채점DB에서 token에 해당하는 데이터를 DELETE
-    const data = await gradingdb.delete_data(token);
-
+    const data = await gradingdb.delete(token);
+    console.log("data deleted.", data);
     if(!req.decoded) {
         // 토큰 만료시 실패
         res.status(400).send('token expired');
