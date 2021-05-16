@@ -186,4 +186,4 @@ async function testdb() {
     
 }
 
-// testdb();
+testdb();
